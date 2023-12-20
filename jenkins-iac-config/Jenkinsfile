@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout Jenkins Config') {
+            steps {
+                git 'https://github.com/TechScrumTeamBeta/Jenkins.git'
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                sh 'terraform init'
+            }
+        }
+
+        stage('Terraform Validate') {
+            steps {
+                sh 'terraform validate'
+            }
+        }
+
+        // Removed Terraform Plan stage that outputs tfplan
+
+        stage('Terraform Apply') {
+            steps {
+                // Apply changes directly without using tfplan
+                sh 'terraform apply -auto-approve'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Jenkins infrastructure update successful!'
+        }
+        failure {
+            echo 'Jenkins infrastructure update failed.'
+        }
+    }
+}
